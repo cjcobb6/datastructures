@@ -20,12 +20,16 @@ struct RangeVector
 
     bool isFull() 
     {
+        cout << "checking for full" << endl;
+        cout << free_index << endl;
+        cout << end_index << endl;
         return free_index == end_index;
     }
 
     void push_back(T elt) 
     {
         data.emplace_back(elt);
+        ++free_index;
     }
 
     T& get(size_t idx) 
@@ -46,12 +50,13 @@ class LinkedVector
     {
         m_data.emplace_back(0, block_size);
         m_length = 0;
+        m_blockSize = block_size;
     }
 
     void resize() 
     {
         std::cout << "resizing" << std::endl;
-        m_data.emplace_back(m_length,m_length + m_blockSize);
+        m_data.emplace_back(m_length*m_data.size(),m_data.size()*m_blockSize);
     }
 
     bool isFull()
@@ -61,11 +66,13 @@ class LinkedVector
 
     RangeVector<T>* lastBlock() 
     {
-        return &(m_data[m_data.size() - 1]);
+        cout << "getting last block " << m_data.size() << endl;
+        return &(m_data[m_data.size()-1]);
     }
 
     void push_back(T elt) 
     {
+        cout << "pushing" << endl;
         if(isFull()) 
         {
             resize();
@@ -77,8 +84,12 @@ class LinkedVector
     T& get(size_t idx)
     {
         if(idx >= m_length) throw "out of range";
-        RangeVector<T> block = m_data[idx / m_blockSize];
-        return block.get(idx);
+        cout << "getting ";
+        cout << "index " << idx << endl;
+        cout << "block size " <<m_blockSize << endl;
+        cout << "quotient " << (idx / m_blockSize) << endl;
+        cout << "num blocks" << m_data.size() << endl;
+        return m_data[idx / m_blockSize].get(idx);
     }
 
     size_t size() { return m_length;}
@@ -99,7 +110,6 @@ int main(int argc, char** argv)
 
     for(size_t i = 0; i < link.size(); i++) 
     {
-        cout << total << endl;
         total += link.get(i);
     }
     cout << total << endl;
